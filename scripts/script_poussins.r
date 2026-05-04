@@ -3,7 +3,6 @@ library(filesstrings)
 library(reshape2)
 library(data.table)
 library(jsonlite)
-library(rjson)
 library(tidyverse)
 
 
@@ -22,13 +21,7 @@ if (!dir.exists(dossier_poussins)) {
   stop(paste("Le dossier", dossier_poussins, "n'existe pas."))
 }
 
-# Supprimer TOUT le contenu (fichiers + sous-dossiers)
-unlink(dossier_poussins, recursive = TRUE)
 
-# Recréer le dossier vide (optionnel, si tu veux le garder)
-dir.create(dossier_poussins)
-
-message(paste("Le dossier", dossier_poussins, "a été complètement vidé."))
 
 #source le code des différents scripts R utilisés
 
@@ -49,8 +42,6 @@ recupere_soumission(nom_du_projet = projet,
                     "MULTICSV",
                     dossier_poussins,
                     FALSE)
-
-
 
 
 #----------------------------------------------#
@@ -78,7 +69,7 @@ pous <- read.csv(paste0(dossier_poussins, "/poussins_mtp.csv"), sep = ";", na = 
 #' Pour la rouvière
 
 pous_rouv <- pous %>%
-  dplyr::filter(lieu %in% c("rou")) %>% ###############CHANGER LA DATE POUR RECUPERER LES DONNEES POUR UNE PERIODE DONNEE
+  dplyr::filter(lieu %in% c("rou")) %>% 
 
   dplyr::mutate(date_mesure = format(as.Date(date_mesure, format = "%d/%m/%Y"), format = "%d/%m/%Y"),
                 heure = format(as.POSIXct(heure, format = "%H:%M:%OS"), format = "%H:%M"),
@@ -116,19 +107,13 @@ write.csv(pous_rouv, paste0(here::here("outputs"), "/pous_rouv.csv"), na = "", r
 write.csv(pous_ville, paste0(here::here("outputs"), "/pous_ville.csv"), na = "", row.names = FALSE)
 
 
-#'Les arrangements en cas de bug
-#'dplyr::mutate(poussin_count = dplyr::case_when(stringr::str_detect(uuid, "uuid") ~ uuid, #bug bizarre avec ce formulaire
-#'date_soumission <= "2025-05-01" ~ instanceName, #à cause du changement de place de obs_meas
-#'pop == "font" & lieu == "18" ~ instanceName, #à cause d'une version pas à jour
-#'TRUE ~ poussin_count)) %>% 
-#'  dplyr::select(date_soumission, uuid = "poussin_count", 
-#'                date = "end", 
-#'                pop = "date",
-#'                lieu = "pop",
-#'                nic = "lieu",
-#'               heure = "nic",
-#'               species = "nic_hs_Accuracy",
-#'                species_autre = "species",
-#'                obs_meas = "species_autre",
-#'                nest_com = "obs_meas",
-#'                count = "count") 
+
+# Supprimer TOUT le contenu (fichiers + sous-dossiers)
+unlink(dossier_poussins, recursive = TRUE)
+
+# Recréer le dossier vide (optionnel, si tu veux le garder)
+dir.create(dossier_poussins)
+
+message(paste("Le dossier", dossier_poussins, "a été complètement vidé."))
+
+
