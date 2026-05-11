@@ -48,7 +48,7 @@ connexion_odkcentral(serveur = url_odk_central,
 
 recupere_soumission(nom_du_projet = projet,
                     nom_du_formulaire = formulaire_android,
-                    "API",
+                    "ZIP",
                     "",
                     "CSV",
                     dossier_android,
@@ -64,9 +64,8 @@ recupere_soumission(nom_du_projet = projet,
 
 #'Pour la Rouvière
 
-morph_rou_android <- read.csv(paste0(dossier_android, "/Submissions.csv"), sep = ";", na = "") %>%  
-  dplyr::filter(lieu == "rou") %>% ###############CHANGER LA DATE POUR RECOLTER LES DONNEES POUR UNE PERIODE DONNEE
-  #'Exemple : les données des OF de Muro en mars 2025 ont été récupérées, on peut indiquer qu'on veut récupérer les données après le 01 avril 2025 ("2025-04-01")
+morph_rou_android <- read.csv(paste0(dossier_android, "/adultes_mtp.csv"), sep = "\t", na = "") %>%  
+  dplyr::filter(lieu == "rou") %>% 
   
   dplyr::mutate(dplyr::across(where(is.character),
                               ~dplyr::na_if(., "NA")),
@@ -82,7 +81,7 @@ morph_rou_android <- read.csv(paste0(dossier_android, "/Submissions.csv"), sep =
 
 
 #' Pour la ville
-morph_ville_android <- read.csv(paste0(dossier_android, "/Submissions.csv"), sep = ";", na = "") %>%  
+morph_ville_android <- read.csv(paste0(dossier_android, "/adultes_mtp.csv"), sep = "\t", na = "") %>%  
   dplyr::filter(lieu %in% c("bot", "cef", "fac", "font", "gram", "mas", "mos", "zoo", "mtmr")) %>% ###############CHANGER LA DATE POUR RECOLTER LES DONNEES POUR UNE PERIODE DONNEE
   #'Exemple : les données des OF de Muro en mars 2025 ont été récupérées, on peut indiquer qu'on veut récupérer les données après le 01 avril 2025 ("2025-04-01")
   
@@ -109,14 +108,42 @@ morph_ville_android <- read.csv(paste0(dossier_android, "/Submissions.csv"), sep
 #' formulaire_ios <- "Hérault - iOS - Adultes"
 #' 
 #' 
+#' dossier_ios <- here::here("formulaires", "morph_ios")
 #' 
-#' #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#
-#' #' Adapter les chemins selon l'ordinateur
+#' # Vérifier que le dossier existe
+#' if (!dir.exists(dossier_ios)) {
+#'   stop(paste("Le dossier", dossier_ios, "n'existe pas."))
+#' }
+#' 
+#' 
+#' #source le code des différents scripts R utilisés
+#' source(here::here("Script_ruODK", "constantes.r"))				# Script contenant les variables / constantes
+#' source(here::here("Script_ruODK", "informations_connexion.r"))	# Constantes confidentielles de login à la plateforme
+#' source(here::here("Script_ruODK", "fonctions.r"))				# Script des fonctions utilisées
+#' 
+#' connexion_odkcentral(serveur = url_odk_central,
+#'                      username = login_odk,
+#'                      password = mot_de_passe)
+#' 
+#' #Utilise l'archive zip pour récupérer un fichier CSV fusionné des soumissions
+#' 
+#' recupere_soumission(nom_du_projet = projet,
+#'                     nom_du_formulaire = formulaire_ios,
+#'                     "API",
+#'                     "",
+#'                     "CSV",
+#'                     dossier_ios,
+#'                     FALSE)
+#' 
+#' 
+#' #' 
+#' #' 
+#' #' #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#
 #' #' Attention pour "chemin_dossier", s'assurer que le dossier est créé et vide (ça évite d'écraser une ancienne version)
 #' # chemin_scripts <- source(here::here("Script_ruODK"))
 #' # chemin_dossier <- ) #Je dois trouver un moyen de vider le dossier
 #' dossier_ios <- here::here("formulaires", "morph_ios")
-#' 
+
 #' fichiers_ios <- list.files(path = dossier_ios, full.names = TRUE)
 #' if (length(fichiers_ios) > 0) {
 #'   unlink(fichiers_ios)

@@ -50,14 +50,14 @@ recupere_soumission(nom_du_projet = projet,
 
 
 
-pous <- read.csv(paste0(dossier_poussins, "/poussins_mtp.csv"), sep = ";", na = "") %>% 
+pous <- read.csv(paste0(dossier_poussins, "/poussins_mtp.csv"), sep = "\t", na = "") %>% 
   dplyr::filter(!is.na(uuid)) %>% 
   # dplyr::mutate(uuid = dplyr::case_when(stringr::str_detect(uuid, "POUS") ~ poussin_count, #bug bizarre avec ce formulaire
   #                                                TRUE ~ uuid)) %>% 
   dplyr::mutate(dplyr::across(where(is.character),
                               ~dplyr::na_if(., "NA"))) %>% 
   dplyr::select(uuid, date_mesure, lieu, nic, heure, espece, poussin_count, obs) %>% 
-  dplyr::right_join(read.csv(paste0(dossier_poussins, "/poussins_mtp-poussin.csv"), sep = ";", na = "") %>% 
+  dplyr::right_join(read.csv(paste0(dossier_poussins, "/poussins_mtp-poussin.csv"), sep = "\t", na = "") %>% 
                       dplyr::mutate(dplyr::across(where(is.character),
                                                   ~dplyr::na_if(., "NA"))) %>% 
                       dplyr::select(uuid_parent, action, bague, sex, age_plume, tarsed, poids, collect, meas_com, id_img),
