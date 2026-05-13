@@ -116,7 +116,7 @@ morph_ville_android <- read.csv(paste0(dossier_android, "/adultes_mtp.csv"), sep
 #' }
 #' 
 #' 
-#' #source le code des différents scripts R utilisés
+#' #' #source le code des différents scripts R utilisés
 #' source(here::here("Script_ruODK", "constantes.r"))				# Script contenant les variables / constantes
 #' source(here::here("Script_ruODK", "informations_connexion.r"))	# Constantes confidentielles de login à la plateforme
 #' source(here::here("Script_ruODK", "fonctions.r"))				# Script des fonctions utilisées
@@ -129,13 +129,13 @@ morph_ville_android <- read.csv(paste0(dossier_android, "/adultes_mtp.csv"), sep
 #' 
 #' recupere_soumission(nom_du_projet = projet,
 #'                     nom_du_formulaire = formulaire_ios,
-#'                     "API",
+#'                     "ZIP",
 #'                     "",
 #'                     "CSV",
 #'                     dossier_ios,
 #'                     FALSE)
-#' 
-#' 
+#' #' 
+#' #' 
 #' #' 
 #' #' 
 #' #' #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#
