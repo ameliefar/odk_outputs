@@ -134,9 +134,9 @@ morph_ville_android <- read.csv(paste0(dossier_android, "/adultes_mtp.csv"), sep
 #'                     "CSV",
 #'                     dossier_ios,
 #'                     FALSE)
-#' #' 
-#' #' 
-#' #' 
+#'
+#'
+#' #'
 #' #' 
 #' #' #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#
 #' #' Attention pour "chemin_dossier", s'assurer que le dossier est créé et vide (ça évite d'écraser une ancienne version)
