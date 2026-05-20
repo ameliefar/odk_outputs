@@ -48,7 +48,7 @@ connexion_odkcentral(serveur = url_odk_central,
 
 recupere_soumission(nom_du_projet = projet,
                     nom_du_formulaire = formulaire_android,
-                    "ZIP",
+                    "API",
                     "",
                     "CSV",
                     dossier_android,
@@ -64,38 +64,38 @@ recupere_soumission(nom_du_projet = projet,
 
 #'Pour la Rouvière
 
-morph_rou_android <- read.csv(paste0(dossier_android, "/adultes_mtp.csv"), sep = "\t", na = "") %>%  
-  dplyr::filter(lieu == "rou") %>% 
+morph_rou_android <- read.csv(paste0(dossier_android, "/tmp/Submissions.csv"), sep = "\t", na = "") %>%  
+  dplyr::filter(info_nest_lieu == "rou") %>% 
   
   dplyr::mutate(dplyr::across(where(is.character),
                               ~dplyr::na_if(., "NA")),
-                date_mesure = format(as.Date(date_mesure, format = "%d/%m/%Y"), format = "%d/%m/%Y"),
-                heure = format(as.POSIXct(heure, format = "%H:%M:%OS"), format = "%H:%M"),
-                obs = str_trim(str_to_upper(obs)),
-                sexe = dplyr::case_when(sex == "1" ~ "M",
-                                        sex == "2" ~ "F",
+                date_mesure = format(as.Date(info_nest_date_mesure, format = "%d/%m/%Y"), format = "%d/%m/%Y"),
+                heure = format(as.POSIXct(capture_heure, format = "%H:%M:%OS"), format = "%H:%M"),
+                obs = str_trim(str_to_upper(id_measure_obs)),
+                sexe = dplyr::case_when(info_adult_sex == "1" ~ "M",
+                                        info_adult_sex == "2" ~ "F",
                                         TRUE ~ "?"),
-                nic = as.numeric(nic)) %>% 
+                nic = as.numeric(info_nest_nic)) %>% 
   dplyr::arrange(as.Date(date_mesure, format = "%d/%m/%Y"), obs, nic, sexe) %>% 
-  dplyr::select(date_mesure, nic, heure, obs, espece, action, bague, sexe,  age)
+  dplyr::select(date_mesure, nic, heure, obs, espece = "capture_espece", action = "id_adult_action", bague = "id_adult_bague", sexe,  age = "info_adult_age")
 
 
 #' Pour la ville
-morph_ville_android <- read.csv(paste0(dossier_android, "/adultes_mtp.csv"), sep = "\t", na = "") %>%  
-  dplyr::filter(lieu %in% c("bot", "cef", "fac", "font", "gram", "mas", "mos", "zoo", "mtmr")) %>% ###############CHANGER LA DATE POUR RECOLTER LES DONNEES POUR UNE PERIODE DONNEE
-  #'Exemple : les données des OF de Muro en mars 2025 ont été récupérées, on peut indiquer qu'on veut récupérer les données après le 01 avril 2025 ("2025-04-01")
-  
+morph_ville_android <- read.csv(paste0(dossier_android, "/tmp/Submissions.csv"), sep = "\t", na = "") %>%  
+  dplyr::filter(info_nest_lieu %in% c("bot", "cef", "fac", "font", "gram", "mas", "mos", "zoo", "mtmr")) %>%
+
   dplyr::mutate(dplyr::across(where(is.character),
                               ~dplyr::na_if(., "NA")),
-                date_mesure = format(as.Date(date_mesure, format = "%d/%m/%Y"), format = "%d/%m/%Y"),
-                heure = format(as.POSIXct(heure, format = "%H:%M:%OS"), format = "%H:%M"),
-                obs = str_trim(str_to_upper(obs)),
-                sexe = dplyr::case_when(sex == "1" ~ "M",
-                                        sex == "2" ~ "F",
+                date_mesure = format(as.Date(info_nest_date_mesure, format = "%d/%m/%Y"), format = "%d/%m/%Y"),
+                heure = format(as.POSIXct(capture_heure, format = "%H:%M:%OS"), format = "%H:%M"),
+                obs = str_trim(str_to_upper(id_measure_obs)),
+                sexe = dplyr::case_when(info_adult_sex == "1" ~ "M",
+                                        info_adult_sex == "2" ~ "F",
                                         TRUE ~ "?"),
-                nic = as.numeric(nic)) %>% 
+                nic = as.numeric(info_nest_nic),
+                lieu = info_nest_lieu) %>% 
   dplyr::arrange(lieu, nic, as.Date(date_mesure, format = "%d/%m/%Y"), sexe) %>% 
-  dplyr::select(date_mesure, lieu, nic, heure, obs, espece, action, bague, sexe,  age)
+  dplyr::select(date_mesure, lieu, nic, heure, obs, espece = "capture_espece", action = "id_adult_action", bague = "id_adult_bague", sexe,  age = "info_adult_age")
 
 
 
