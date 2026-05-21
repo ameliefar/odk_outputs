@@ -29,53 +29,66 @@ source(here::here("Script_ruODK", "constantes.r"))				# Script contenant les var
 source(here::here("Script_ruODK", "informations_connexion.r"))	# Constantes confidentielles de login à la plateforme
 source(here::here("Script_ruODK", "fonctions.r"))				# Script des fonctions utilisées
 
-connexion_odkcentral(serveur = url_odk_central,
-                     username = login_odk,
-                     password = mot_de_passe)
+android <- submission_export(
+  local_dir = dossier_poussins,
+  overwrite = TRUE,
+  media = TRUE,
+  repeats = TRUE,
+  deleted_fields = FALSE,
+  pid = pid_projet(projet),
+  fid = fid_formulaire(projet, formulaire_poussins),
+  url = "https://odk.gedeop.inrae.fr",
+  un = login_odk,
+  pw =  mot_de_passe,
+  pp = get_default_pp(),
+  retries = get_retries(),
+  odkc_version = get_default_odkc_version(),
+  verbose = get_ru_verbose()
+)
+t_android <-  dossier_poussins
+unzip(android, exdir = t_android)
+unlink(android)
 
-#Utilise l'archive zip pour récupérer un ensemble de fichiers CSV des soumissions (uniquement pour les formulaires avec répétition)
+  
+  #----------------------------------------------------#
+  # RECUPERATION FICHIERS DES FORMULAIRES SOUS ANDROID #
+  #----------------------------------------------------#
+  
+  
+setwd(dossier_poussins)
+filenames <-  gsub("\\.csv$","", list.files(pattern="\\.csv$"))
 
-recupere_soumission(nom_du_projet = projet,
-                    nom_du_formulaire = formulaire_poussins,
-                    "ZIP",
-                    "",
-                    "MULTICSV",
-                    dossier_poussins,
-                    FALSE)
+for(i in filenames){
+  assign(i, read.csv(paste(i, ".csv", sep="")))
+}
+csv_android <- poussins_mtp %>% 
+  select(6:8, 13, 15, 16, 20, 23) %>% 
+  rename_with(~str_remove(.x, "info_gen.")) %>% 
+  janitor::clean_names() %>% 
+  left_join(`poussins_mtp-poussin` %>% 
+              select(6, 15) %>% 
+              rename_with(~str_remove(.x, "info_chick.")) %>% 
+              janitor::clean_names(),
+            by = c("key" = "parent_key"),
+            relationship = "one-to-many")
 
-
+print(paste("Le fichier csv android génère", nrow(csv_android), "lignes"))
 #----------------------------------------------#
 # Mise en forme des données poussins récoltées #
 #----------------------------------------------#
 
-
-
-pous <- read.csv(paste0(dossier_poussins, "/poussins_mtp.csv"), sep = "\t", na = "") %>% 
-  dplyr::filter(!is.na(uuid)) %>% 
-  # dplyr::mutate(uuid = dplyr::case_when(stringr::str_detect(uuid, "POUS") ~ poussin_count, #bug bizarre avec ce formulaire
-  #                                                TRUE ~ uuid)) %>% 
-  dplyr::mutate(dplyr::across(where(is.character),
-                              ~dplyr::na_if(., "NA"))) %>% 
-  dplyr::select(uuid, date_mesure, lieu, nic, heure, espece, poussin_count, obs) %>% 
-  dplyr::right_join(read.csv(paste0(dossier_poussins, "/poussins_mtp-poussin.csv"), sep = "\t", na = "") %>% 
-                      dplyr::mutate(dplyr::across(where(is.character),
-                                                  ~dplyr::na_if(., "NA"))) %>% 
-                      dplyr::select(uuid_parent, action, bague, sex, age_plume, tarsed, poids, collect, meas_com, id_img),
-                    by = c("uuid" = "uuid_parent"),
-                    relationship = "one-to-many")
-
-
-
 #' Pour la rouvière
 
-pous_rouv <- pous %>%
+pous_rouv <- csv_android %>%
+  dplyr::mutate(dplyr::across(where(is.character),
+                              ~dplyr::na_if(., "NA"))) %>% 
   dplyr::filter(lieu %in% c("rou")) %>% 
 
   dplyr::mutate(date_mesure = format(as.Date(date_mesure, format = "%d/%m/%Y"), format = "%d/%m/%Y"),
                 heure = format(as.POSIXct(heure, format = "%H:%M:%OS"), format = "%H:%M"),
                 npul = poussin_count,
                 obs = stringr::str_trim(stringr::str_to_upper(obs))) %>%
-  dplyr::group_by(uuid) %>%
+  dplyr::group_by(key) %>%
   dplyr::arrange(bague) %>%
   dplyr::mutate(ordre_passage = 1:n()) %>%
   dplyr::ungroup() %>%
@@ -85,14 +98,14 @@ pous_rouv <- pous %>%
 
 
 #' Pour la ville
-pous_ville <- pous %>% 
-  dplyr::filter(lieu %in% c("bot", "cef", "fac", "font", "gram", "mas", "mos", "zoo", "mtmr")) %>% ###############CHANGER LA DATE POUR RECUPERER LES DONNEES POUR UNE PERIODE DONNEE
+pous_ville <- csv_android %>% 
+  dplyr::filter(lieu %in% c("bot", "cef", "fac", "font", "gram", "mas", "mos", "zoo", "mtmr")) %>% 
   
   dplyr::mutate(date_mesure = format(as.Date(date_mesure, format = "%d/%m/%Y"), format = "%d/%m/%Y"),
                 heure = format(as.POSIXct(heure, format = "%H:%M:%OS"), format = "%H:%M"),
                 npul = poussin_count,
                 obs = stringr::str_trim(stringr::str_to_upper(obs))) %>% 
-  dplyr::group_by(uuid) %>% 
+  dplyr::group_by(key) %>% 
   dplyr::arrange(bague) %>% 
   dplyr::mutate(ordre_passage = 1:n()) %>% 
   dplyr::ungroup() %>% 
