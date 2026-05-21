@@ -109,7 +109,7 @@ morph_ville_android <- morph_android %>%
                                         sex == "2" ~ "F",
                                         TRUE ~ "?"),
                 bague_couleur = str_trim(str_to_upper(bague_coul))) %>% 
-  dplyr::arrange(lieu, nic, as.Date(date_mesure, format = "%d/%m/%Y"), sexe) %>% 
+  dplyr::arrange(lieu, as.numeric(nic), as.Date(date_mesure, format = "%d/%m/%Y"), sexe) %>% 
   dplyr::select(date_mesure, lieu, nic, heure, obs, espece, action, bague, bague_couleur, sexe,  age)
 
 
@@ -117,7 +117,7 @@ morph_ville_android <- morph_android %>%
 # Sauvegarde des csv #
 #--------------------#
 
-write.csv(morph_rou_android, paste0(here::here("outputs"), "/morph_rou.csv"), na = "", row.names = FALSE)
+write.csv(morph_rou_android, paste0(here::here("outputs"), "/morph_rouv.csv"), na = "", row.names = FALSE)
 write.csv(morph_ville_android, paste0(here::here("outputs"), "/morph_ville.csv"), na = "", row.names = FALSE)
 
 # Supprimer TOUT le contenu (fichiers + sous-dossiers)
