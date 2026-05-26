@@ -36,7 +36,7 @@ connexion_odkcentral(serveur = url_odk_central,
 android <- submission_export(
   local_dir = dossier_poussins,
   overwrite = TRUE,
-  media = TRUE,
+  media = FALSE,
   repeats = TRUE,
   deleted_fields = FALSE,
   pid = pid_projet(projet),
@@ -96,7 +96,7 @@ pous_rouv <- csv_android %>%
   dplyr::arrange(bague) %>%
   dplyr::mutate(ordre_passage = 1:n()) %>%
   dplyr::ungroup() %>%
-  dplyr::arrange(as.Date(date_mesure, format = "%d/%m/%Y"), obs, as.numeric(nic), ordre_passage) %>%
+  dplyr::arrange(as.Date(date_mesure, format = "%d/%m/%Y"), obs, suppressWarnings(as.numeric(nic)), ordre_passage) %>%
   dplyr::select(date_mesure, nic, heure, obs, espece, ordre_passage, bague)
 
 
@@ -113,7 +113,7 @@ pous_ville <- csv_android %>%
   dplyr::arrange(bague) %>% 
   dplyr::mutate(ordre_passage = 1:n()) %>% 
   dplyr::ungroup() %>% 
-  dplyr::arrange(lieu, as.numeric(nic), as.Date(date_mesure, format = "%d/%m/%Y"), obs, ordre_passage) %>% 
+  dplyr::arrange(lieu, suppressWarnings(as.numeric(nic)), as.Date(date_mesure, format = "%d/%m/%Y"), obs, ordre_passage) %>% 
   dplyr::select(date_mesure, lieu, nic, heure, obs, espece, ordre_passage, bague)
 
 #--------------------#

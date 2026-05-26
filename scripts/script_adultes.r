@@ -53,9 +53,9 @@ android <- odata_submission_get(
   expand = FALSE,
   filter = NULL,
   parse = TRUE,
-  download = TRUE,
+  download = FALSE,
   orders = get_default_orders(),
-  local_dir = paste0(dossier_android, "/media/"),
+  #local_dir = paste0(dossier_android, "/media/"),
   pid = pid_projet(projet),
   fid = fid_formulaire(projet, formulaire_android),
   url = "https://odk.gedeop.inrae.fr",
@@ -95,7 +95,7 @@ morph_rou_android <- morph_android %>%
                                         sex == "2" ~ "F",
                                         TRUE ~ "?"),
                 bague_couleur = str_trim(str_to_upper(bague_coul))) %>% 
-  dplyr::arrange(as.Date(date_mesure, format = "%d/%m/%Y"), obs, as.numeric(nic), sexe) %>% 
+  dplyr::arrange(as.Date(date_mesure, format = "%d/%m/%Y"), obs, suppressWarnings(as.numeric(nic)), sexe) %>% 
   dplyr::select(date_mesure, nic, heure, obs, espece, action, bague, bague_couleur, sexe,  age)
 
 
@@ -112,7 +112,7 @@ morph_ville_android <- morph_android %>%
                                         sex == "2" ~ "F",
                                         TRUE ~ "?"),
                 bague_couleur = str_trim(str_to_upper(bague_coul))) %>% 
-  dplyr::arrange(lieu, as.numeric(nic), as.Date(date_mesure, format = "%d/%m/%Y"), sexe) %>% 
+  dplyr::arrange(lieu, suppressWarnings(as.numeric(nic)), as.Date(date_mesure, format = "%d/%m/%Y"), sexe) %>% 
   dplyr::select(date_mesure, lieu, nic, heure, obs, espece, action, bague, bague_couleur, sexe,  age)
 
 
