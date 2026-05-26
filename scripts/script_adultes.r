@@ -40,6 +40,9 @@ source(here::here("Script_ruODK", "constantes.r"))				# Script contenant les var
 source(here::here("Script_ruODK", "informations_connexion.r"))	# Constantes confidentielles de login à la plateforme
 source(here::here("Script_ruODK", "fonctions.r"))				# Script des fonctions utilisées
 
+connexion_odkcentral(serveur = url_odk_central,
+                     username = login_odk,
+                     password = mot_de_passe)
 
 android <- odata_submission_get(
   table = "Submissions",
