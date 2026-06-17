@@ -66,7 +66,7 @@ for(i in filenames){
   assign(i, read.csv(paste(i, ".csv", sep="")))
 }
 csv_android <- poussins_mtp %>% 
-  select(6:8, 13, 15, 16, 20, 27) %>% 
+  select(6:8, 13, 15, 16, 20, 28) %>% 
   rename_with(~str_remove(.x, "info_gen.")) %>% 
   janitor::clean_names() %>% 
   left_join(`poussins_mtp-poussin` %>% 
